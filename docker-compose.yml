@@ -1,0 +1,49 @@
+
+services:
+  postgres:
+    image: postgres:16-alpine 
+    container_name: ecommerce_db
+    environment:
+      POSTGRES_USER: ${PGUSER}           
+      POSTGRES_PASSWORD: ${PG_PASSWORD}        
+      POSTGRES_DB: ${PG_DATABASE}         
+    ports:
+      - "5433:5432"                  
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PG_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  # 2. The Cache Layer
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce_cache
+    ports:
+      - "6379:6379"
+  # 3. The Event Broker
+  kafka:
+    image: ${KAFKA_IMAGE}
+    container_name: ecommerce_broker
+    ports:
+      - "${KAFKA_PORT}:9092"
+    environment:
+      - KAFKA_NODE_ID=${KAFKA_NODE_ID}
+      - KAFKA_PROCESS_ROLES=${KAFKA_PROCESS_ROLES}
+      - KAFKA_LISTENERS=${KAFKA_LISTENERS}
+      - KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS}
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=${KAFKA_CONTROLLER_QUORUM_VOTERS}
+      - KAFKA_CONTROLLER_LISTENER_NAMES=${KAFKA_CONTROLLER_LISTENER_NAMES}
+      - KAFKA_INTER_BROKER_LISTENER_NAME=${KAFKA_INTER_BROKER_LISTENER_NAME}
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR}
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR}
+      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS}
+      - CLUSTER_ID=${KAFKA_CLUSTER_ID}
+
+volumes:
+  postgres_data:
