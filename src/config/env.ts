@@ -1,18 +1,10 @@
 import { config } from "dotenv";
+import { toNumber } from "../utils/formatter";
 
 config();
 
 const env = process.env;
 
-const toNumber = (value: string | undefined, fallback: number): number => {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-const toBoolean = (value: string | undefined, fallback: boolean): boolean => {
-  if (value === undefined) return fallback;
-  return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
-};
 
 export const ENV = {
   NODE_ENV: env.NODE_ENV || "development",
@@ -23,6 +15,11 @@ export const ENV = {
   PG_HOST: env.PG_HOST || "localhost",
   PG_PORT: toNumber(env.PG_PORT, 5432),
   PG_DATABASE: env.PG_DATABASE || "",
+
+  JWT_ACCESS_SECRET: env.JWT_ACCESS_SECRET,
+  JWT_REFRESH_SECRET: env.JWT_REFRESH_SECRET,
+  JWT_ACCESS_EXPIRES_IN: env.JWT_ACCESS_EXPIRES_IN,
+  JWT_REFRESH_EXPIRES_IN: env.JWT_REFRESH_EXPIRES_IN,
 
   REDIS_HOST: env.REDIS_HOST || "localhost",
   REDIS_PORT: toNumber(env.REDIS_PORT, 6379),
