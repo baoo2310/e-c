@@ -6,8 +6,6 @@ import { StatusCodes } from 'http-status-codes';
 import { publishEvent } from './kafkaService';
 import { USER_EVENTS_TOPIC } from '../config/kafka';
 import { redis } from '../config/redis';
-import jwt from 'jsonwebtoken';
-import { ENV } from '../config/env';
 import { tokenUtils } from '../utils/tokens';
 
 export const createUser = async (userData: userData) => {

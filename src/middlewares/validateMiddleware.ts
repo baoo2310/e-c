@@ -2,10 +2,13 @@ import { z, ZodError } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-export const validateRequest = (schema: z.ZodType<unknown>) => {
+type RequestSource = 'body' | 'query' | 'params';
+
+export const validateRequest = (schema: z.ZodType<unknown>, source: RequestSource = 'body') => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req.body);
+      const parsed = await schema.parseAsync(req[source]);
+      (req as unknown as Record<RequestSource, unknown>)[source] = parsed;
       return next();
     } catch (error) {
       if (error instanceof ZodError) {

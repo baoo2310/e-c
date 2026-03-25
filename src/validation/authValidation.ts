@@ -18,7 +18,6 @@ export const registerSchema = loginSchema.extend({
 });
 
 export const refreshTokenSchema = z.object({
-  body: z.object({
-    refreshToken: z.string().min(1, "Refresh token is required"),
-  }),
+  // Refresh token is read from httpOnly cookie in authController, not from request body.
+  // Keep a permissive schema so the middleware can still run without blocking valid requests.
 });
