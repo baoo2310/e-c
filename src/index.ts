@@ -1,14 +1,16 @@
 import express from 'express';
 import { errorMiddleware } from './middlewares/errorMiddleware';
-import authRoutes from './routes/authRoute';
-import productRoute from './routes/productRoute';
-import cartRoutes from './routes/cartRoute';
 import { ApiError } from './utils/ApiErrors';
 import { StatusCodes } from 'http-status-codes';
 import { connectProducer } from './services/kafkaService';
 import { connectConsumer } from './config/kafka';
 import { connectRedis } from './config/redis';
 import cookieParser from 'cookie-parser';
+
+import authRoutes from './routes/authRoute';
+import productRoute from './routes/productRoute';
+import cartRoutes from './routes/cartRoute';
+import orderRoutes from './routes/orderRoute';
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoute)
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Catch-all for 404 (Route not found)
 app.use((req, res, next) => {
