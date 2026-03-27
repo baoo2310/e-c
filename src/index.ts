@@ -2,6 +2,7 @@ import express from 'express';
 import { errorMiddleware } from './middlewares/errorMiddleware';
 import authRoutes from './routes/authRoute';
 import productRoute from './routes/productRoute';
+import cartRoutes from './routes/cartRoute';
 import { ApiError } from './utils/ApiErrors';
 import { StatusCodes } from 'http-status-codes';
 import { connectProducer } from './services/kafkaService';
@@ -16,6 +17,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoute)
+app.use('/api/cart', cartRoutes);
 
 // Catch-all for 404 (Route not found)
 app.use((req, res, next) => {
